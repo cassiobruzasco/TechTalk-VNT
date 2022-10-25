@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TechTalk - VNT</string>
+    <string name="next">Próximo</string>
+
+    <string name="roll_the_dice">Jogar o dado</string>
+    <string name="weather_cast">Temperatura em Campinas\n\n%1sºC\n\nHumidade: %2s%%</string>
+</resources>
