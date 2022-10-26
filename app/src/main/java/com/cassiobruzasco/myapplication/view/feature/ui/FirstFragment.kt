@@ -56,8 +56,8 @@ class FirstFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.roll.collectLatest { result ->
                     when (result) {
-                        FirstViewModel.RollState.RollIdle -> Unit
-                        is FirstViewModel.RollState.RollSuccess -> {
+                        FirstViewModel.RollState.WaitingToRoll -> Unit
+                        is FirstViewModel.RollState.Roll -> {
                             when (result.value) {
                                 1 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_one))
                                 2 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_two))
