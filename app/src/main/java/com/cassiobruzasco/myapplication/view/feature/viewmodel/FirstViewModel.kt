@@ -13,7 +13,7 @@ import kotlin.random.Random
 class FirstViewModel: ViewModel() {
 
     private val _roll = MutableStateFlow<RollState>(RollState.WaitingToRoll)
-    val roll = _roll
+    val roll: StateFlow<RollState> = _roll
 
     init {
         collectFlow()
@@ -31,7 +31,7 @@ class FirstViewModel: ViewModel() {
     private fun collectFlow() {
         viewModelScope.launch {
             dice.collect { roll ->
-               Log.d("FirstViewModel", "Rolled: $roll")
+                Log.d("FirstViewModel", "Rolled: $roll")
             }
         }
     }

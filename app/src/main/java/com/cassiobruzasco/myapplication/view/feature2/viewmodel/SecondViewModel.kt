@@ -6,6 +6,7 @@ import com.cassiobruzasco.myapplication.data.remote.model.WeatherResponseItem
 import com.cassiobruzasco.myapplication.data.remote.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,7 +16,7 @@ class SecondViewModel @Inject constructor(private val weatherRepository: Weather
 
 
     private val _weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
-    val weather = _weather
+    val weather: StateFlow<WeatherState> = _weather
 
     init {
         getWeather()
