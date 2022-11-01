@@ -24,7 +24,7 @@ class SecondViewModel @Inject constructor(private val weatherRepository: Weather
 
     private fun getWeather() {
         viewModelScope.launch {
-            val response = weatherRepository.getWeather("Campinas", 10)
+            val response = weatherRepository.getWeather("Campinas", 1)
             if (response.isSuccessful) {
                 response.body()?.let { weatherItem ->
                     _weather.update { WeatherState.Success(weatherItem) }

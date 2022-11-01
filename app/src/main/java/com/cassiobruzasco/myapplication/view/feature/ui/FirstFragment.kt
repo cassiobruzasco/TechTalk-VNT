@@ -50,8 +50,11 @@ class FirstFragment : Fragment() {
     }
 
     private fun startStateFlow() {
-        // Na View nunca usar o lifecycleScope.launch sem o repeat
-        // O repeat informa que só vai rodar enquanto esse lifecycle viver
+        /*
+            Na View nunca usar o lifecycleScope.launch sem o repeat
+            - repeat é uma função suspensa que roda sempre que passar do lifecycle informado e cancela
+            sempre que passar por lifecycles abaixo do informado é imediatamente cancelado.
+         */
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.roll.collectLatest { result ->
@@ -59,18 +62,22 @@ class FirstFragment : Fragment() {
                         FirstViewModel.RollState.WaitingToRoll -> Unit
                         is FirstViewModel.RollState.Roll -> {
                             when (result.value) {
-                                1 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_one))
-                                2 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_two))
-                                3 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_three))
-                                4 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_four))
-                                5 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_five))
-                                6 -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_six))
-                                else -> binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.icn_none))
+                                1 -> changeDrawable(R.drawable.icn_one)
+                                2 -> changeDrawable(R.drawable.icn_two)
+                                3 -> changeDrawable(R.drawable.icn_three)
+                                4 -> changeDrawable(R.drawable.icn_four)
+                                5 -> changeDrawable(R.drawable.icn_five)
+                                6 -> changeDrawable(R.drawable.icn_six)
+                                else -> changeDrawable(R.drawable.icn_none)
                             }
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun changeDrawable(id: Int) {
+        binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), id))
     }
 }
