@@ -63,7 +63,7 @@ class FirstViewModel: ViewModel() {
             }
                 //Se quiser que o collect rode em uma courotine separada, adicione um buffer
                 //.buffer
-                .collectLatest {
+                .collectLatest { // trocar pro collect para ver o funcionamento certo
                     Log.d("FirstViewModel", "FLOWONEACH: comendo $it")
                     delay(200L)
                     Log.d("FirstViewModel", "FLOWONEACH: terminou de comer $it")
