@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/roll_the_dice"
+        android:backgroundTint="@color/purple_200"
         app:layout_constraintBottom_toTopOf="@id/button_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,13 +20,25 @@
     <ImageView
         android:id="@+id/dice"
         android:textSize="24sp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/roll_the_dice"
+        android:src="@drawable/icn_none"
+        app:layout_constraintBottom_toTopOf="@id/button_roll"
+        app:layout_constraintEnd_toStartOf="@id/dice2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/dice2"
+        android:textSize="24sp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/roll_the_dice"
         android:src="@drawable/icn_none"
         app:layout_constraintBottom_toTopOf="@id/button_roll"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dice"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -34,6 +47,7 @@
         android:layout_height="wrap_content"
         android:text="@string/next"
         android:layout_margin="12dp"
+        android:backgroundTint="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

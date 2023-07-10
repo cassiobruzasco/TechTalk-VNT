@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.cassiobruzasco.myapplication.R
+import com.cassiobruzasco.myapplication.data.remote.repository.WeatherState
 import com.cassiobruzasco.myapplication.databinding.FragmentSecondBinding
 import com.cassiobruzasco.myapplication.view.feature2.viewmodel.SecondViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,26 +35,31 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        startStateFlow()
+        initObs()
     }
 
-    private fun startStateFlow() {
+    private fun initObs() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.weather.collectLatest { state ->
+                viewModel.weather.collect { state ->
                     when (state) {
-                        SecondViewModel.WeatherState.Error -> Toast.makeText(requireContext(), "Error!!!", Toast.LENGTH_LONG).show()
-                        SecondViewModel.WeatherState.Loading -> binding.loading.visibility = View.VISIBLE
-                        is SecondViewModel.WeatherState.Success -> {
-                            binding.apply {
-                                loading.visibility = View.GONE
-                                text.visibility = View.VISIBLE
-                                text.text = resources.getString(
-                                    R.string.weather_cast,
-                                    state.weatherItem.list[0].temperature.day.toString(),
-                                    state.weatherItem.list[0].humidity.toString()
-                                )
+                        WeatherState.Loading -> binding.loading.visibility = View.VISIBLE
+
+                        is WeatherState.Success -> {
+                            state.weatherItem.list.forEach {
+                                binding.apply {
+                                    loading.visibility = View.GONE
+                                    text.visibility = View.VISIBLE
+                                    text.text = resources.getString(
+                                        R.string.weather_cast,
+                                        it.temperature.day.toString(),
+                                        it.humidity.toString()
+                                    )
+                                }
                             }
+                        }
+                        is WeatherState.Error -> {
+                            Toast.makeText(requireContext(), state.errorMsg, Toast.LENGTH_LONG).show()
                         }
                     }
                 }

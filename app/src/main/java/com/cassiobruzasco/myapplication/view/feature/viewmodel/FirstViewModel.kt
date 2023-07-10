@@ -1,39 +1,43 @@
 package com.cassiobruzasco.myapplication.view.feature.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 @ViewModelScoped
-class FirstViewModel: ViewModel() {
+class FirstViewModel : ViewModel() {
 
     private val _roll = MutableStateFlow<RollState>(RollState.WaitingToRoll)
-    val roll: StateFlow<RollState> = _roll
+    val roll = _roll.asStateFlow()
+
+    /**
+     *  LiveData example - Google recommendations don't mention livedata anymore and
+     *  is strongly recommended to build your apps with kotlin flows
+     *  so in my professional opinion, we have much more to gain using flows.
+     *  But regardless the usage of them should be similar, we just don't use livedata anymore.
+     *  It was created to solve some urgent android problems, now we have a better and more
+     *  sophisticated solution
+     */
+    private val _rollLiveData = MutableLiveData<RollState>(RollState.WaitingToRoll)
+    val rollLiveData: LiveData<RollState> = _rollLiveData
 
     init {
-        collectFlow()
-
         zipExample()
 
         collectOnEachFlow()
-    }
-
-    private val dice = flow {
-        val random = Random.nextInt(0, 7)
-        emit(random)
-    }
-
-    private fun collectFlow() {
-        viewModelScope.launch {
-            dice.collect { roll ->
-                Log.d("FirstViewModel", "Rolled: $roll")
-            }
-        }
     }
 
     private fun zipExample() {
@@ -51,36 +55,35 @@ class FirstViewModel: ViewModel() {
     private fun collectOnEachFlow() {
         val flow = flow {
             delay(150L)
-            emit("ENTRADA")
+            emit("ENTRY")
             delay(1000L)
-            emit("PRATO PRINCIPAL")
+            emit("MAIN COURSE")
             delay(100L)
-            emit("SOBREMESA")
+            emit("DESSERT")
         }
         viewModelScope.launch {
             flow.onEach {
-                Log.d("FirstViewModel", "FLOWONEACH: $it entregue")
+                Log.d("FirstViewModel", "FLOW_ON_EACH: WAITER DELIVERS $it")
             }
-                //Se quiser que o collect rode em uma courotine separada, adicione um buffer
-                //.buffer
-                .collectLatest { // trocar pro collect para ver o funcionamento certo
-                    Log.d("FirstViewModel", "FLOWONEACH: comendo $it")
+                .collectLatest { // change to collect to see the right behavior for this scenario
+                    Log.d("FirstViewModel", "FLOW_ON_EACH: CUSTOMER EATING $it")
                     delay(200L)
-                    Log.d("FirstViewModel", "FLOWONEACH: terminou de comer $it")
+                    Log.d("FirstViewModel", "FLOW_ON_EACH: CUSTOMER FINISHED EATING $it")
                 }
         }
     }
 
     fun rollInUi() {
-        val random = Random.nextInt(1, 7)
-        _roll.update { RollState.Roll(random) }
+        var random = Random.nextInt(1, 7)
+        _roll.value = RollState.Roll(random)
 
-        // Outro modo de atribuir valor ao stateflow
-        // _roll.value = RollState.RollSuccess(random)
+        random = Random.nextInt(1, 7)
+        _rollLiveData.value = RollState.Roll(random)
     }
 
-    sealed class RollState {
-        object WaitingToRoll: RollState()
-        class Roll(val value: Int): RollState()
-    }
+}
+
+sealed class RollState {
+    object WaitingToRoll : RollState()
+    class Roll(val value: Int) : RollState()
 }

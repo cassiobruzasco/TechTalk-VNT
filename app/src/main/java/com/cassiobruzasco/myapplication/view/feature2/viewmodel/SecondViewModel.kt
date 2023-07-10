@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cassiobruzasco.myapplication.data.remote.model.WeatherResponseItem
 import com.cassiobruzasco.myapplication.data.remote.repository.WeatherRepository
+import com.cassiobruzasco.myapplication.data.remote.repository.WeatherState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,25 +22,15 @@ class SecondViewModel @Inject constructor(private val weatherRepository: Weather
     val weather: StateFlow<WeatherState> = _weather
 
     init {
-        getWeather()
-    }
-
-    private fun getWeather() {
         viewModelScope.launch {
-            val response = weatherRepository.getWeather("Campinas", 1)
-            if (response.isSuccessful) {
-                response.body()?.let { weatherItem ->
-                    _weather.update { WeatherState.Success(weatherItem) }
-                } ?: kotlin.run {
-                    _weather.update { WeatherState.Error }
-                }
-            }
+            getWeather()
         }
     }
 
-    sealed class WeatherState {
-        object Loading: WeatherState()
-        class Success(val weatherItem: WeatherResponseItem): WeatherState()
-        object Error: WeatherState()
+    private suspend fun getWeather() {
+        viewModelScope.launch {
+            _weather.value = weatherRepository.getWeather("Campinas", 1).single()
+        }
     }
+
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TechTalk - VNT</string>
-    <string name="next">Próximo</string>
+    <string name="next">Next</string>
 
-    <string name="roll_the_dice">Jogar o dado</string>
-    <string name="weather_cast">Temperatura em Campinas\n\n%1sºC\n\nHumidade: %2s%%</string>
+    <string name="roll_the_dice">Roll dice</string>
+    <string name="weather_cast">Temperature in Campinas is:\n\n%1sºC\n\nHumidity: %2s%%</string>
 </resources>

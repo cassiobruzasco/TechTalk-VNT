@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.cassiobruzasco.myapplication.R
 import com.cassiobruzasco.myapplication.databinding.FragmentFirstBinding
 import com.cassiobruzasco.myapplication.view.feature.viewmodel.FirstViewModel
+import com.cassiobruzasco.myapplication.view.feature.viewmodel.RollState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,9 +40,7 @@ class FirstFragment : Fragment() {
 
         binding.apply {
 
-            buttonRoll.setOnClickListener {
-                viewModel.rollInUi()
-            }
+            buttonRoll.setOnClickListener { viewModel.rollInUi() }
 
             buttonNext.setOnClickListener {
                 findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -50,17 +49,16 @@ class FirstFragment : Fragment() {
     }
 
     private fun startStateFlow() {
-        /*
-            Na View nunca usar o lifecycleScope.launch sem o repeat
-            - repeat é uma função suspensa que roda sempre que passar do lifecycle informado e cancela
-            sempre que passar por lifecycles abaixo do informado é imediatamente cancelado.
+
+        /**
+         * State flow example
          */
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.roll.collectLatest { result ->
                     when (result) {
-                        FirstViewModel.RollState.WaitingToRoll -> Unit
-                        is FirstViewModel.RollState.Roll -> {
+                        RollState.WaitingToRoll -> Unit
+                        is RollState.Roll -> {
                             when (result.value) {
                                 1 -> changeDrawable(R.drawable.icn_one)
                                 2 -> changeDrawable(R.drawable.icn_two)
@@ -75,9 +73,32 @@ class FirstFragment : Fragment() {
                 }
             }
         }
+
+        /**
+         * Live data example
+         */
+
+        viewModel.rollLiveData.observe(viewLifecycleOwner) { roll ->
+            when (roll) {
+                is RollState.Roll -> {
+                    when (roll.value) {
+                        1 -> changeDrawable(R.drawable.icn_one, true)
+                        2 -> changeDrawable(R.drawable.icn_two, true)
+                        3 -> changeDrawable(R.drawable.icn_three, true)
+                        4 -> changeDrawable(R.drawable.icn_four, true)
+                        5 -> changeDrawable(R.drawable.icn_five, true)
+                        6 -> changeDrawable(R.drawable.icn_six, true)
+                        else -> changeDrawable(R.drawable.icn_none, true)
+                    }
+                }
+
+                else -> Unit
+            }
+        }
     }
 
-    private fun changeDrawable(id: Int) {
-        binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), id))
+    private fun changeDrawable(id: Int, dice2: Boolean = false) {
+        if (dice2) binding.dice2.setImageDrawable(ContextCompat.getDrawable(requireContext(), id))
+        else binding.dice.setImageDrawable(ContextCompat.getDrawable(requireContext(), id))
     }
 }
