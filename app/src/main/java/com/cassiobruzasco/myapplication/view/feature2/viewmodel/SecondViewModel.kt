@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +29,7 @@ class SecondViewModel @Inject constructor(private val weatherRepository: Weather
     }
 
     private suspend fun getWeather() {
-        viewModelScope.launch {
+        withContext(viewModelScope.coroutineContext) {
             _weather.value = weatherRepository.getWeather("Campinas", 1).single()
         }
     }
