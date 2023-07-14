@@ -16,7 +16,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SecondViewModel @Inject constructor(private val weatherRepository: WeatherRepository): ViewModel() {
+class SecondViewModel @Inject constructor(private val weatherRepository: WeatherRepository) :
+    ViewModel() {
 
 
     private val _weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
@@ -29,9 +30,6 @@ class SecondViewModel @Inject constructor(private val weatherRepository: Weather
     }
 
     private suspend fun getWeather() {
-        withContext(viewModelScope.coroutineContext) {
-            _weather.value = weatherRepository.getWeather("Campinas", 1).single()
-        }
+        _weather.value = weatherRepository.getWeather("Campinas", 1).single()
     }
-
 }
